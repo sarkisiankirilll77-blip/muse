@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<title>MUSE — Telegram Music Mini App</title>
+<style>
+:root{--bg:#0b0b0d;--panel:#151518;--panel2:#1c1c20;--text:#f5f5f7;--muted:#92929a;--line:#29292e;--accent:#fff;--danger:#ff4f67}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{min-height:100vh;overflow-x:hidden}.app{max-width:720px;margin:auto;min-height:100vh;padding:20px 18px 112px}
+button,input{font:inherit}button{border:0;color:inherit;background:none;cursor:pointer}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}.hello{font-size:14px;color:var(--muted)}h1{font-size:30px;margin:3px 0 0;letter-spacing:-1px}.avatar{width:40px;height:40px;border-radius:50%;background:#242429;display:grid;place-items:center;font-weight:700}
+.search{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:13px 15px;margin-bottom:25px}.search input{width:100%;background:none;border:0;outline:0;color:var(--text);font-size:16px}.search span{color:var(--muted)}
+.section{margin:27px 0}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.section-head h2{font-size:18px;margin:0}.section-head button{color:var(--muted);font-size:13px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quick button,.playlist{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:15px;text-align:left;min-height:76px}.quick b{display:block;margin-bottom:5px}.muted{color:var(--muted);font-size:13px}
+.cards{display:flex;gap:12px;overflow:auto;padding-bottom:4px}.cards::-webkit-scrollbar{display:none}.cover{width:120px;height:120px;border-radius:12px;background:linear-gradient(135deg,#26262b,#101013);display:grid;place-items:center;color:#777;flex:none}.cards .playlist{min-width:140px;padding:10px}.cards .cover{width:118px;height:118px}.track{display:flex;align-items:center;gap:12px;padding:10px 4px;border-radius:12px}.track:hover{background:var(--panel)}.track-cover{width:52px;height:52px;border-radius:9px;background:#242429;display:grid;place-items:center;flex:none}.track-info{min-width:0;flex:1}.track-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-artist{color:var(--muted);font-size:13px;margin-top:4px}.icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}.icon:hover{background:var(--panel2)}.liked{color:var(--danger)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(720px,100%);height:76px;background:rgba(12,12,14,.92);backdrop-filter:blur(20px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom);z-index:20}.nav button{flex:1;color:var(--muted);font-size:11px}.nav button.active{color:var(--text)}.nav .ni{display:block;font-size:21px;margin-bottom:3px}
+.page{display:none}.page.active{display:block}.back{display:flex;gap:8px;align-items:center;margin-bottom:20px;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.pill{background:var(--panel);border:1px solid var(--line);padding:9px 13px;border-radius:12px}.primary{background:var(--text);color:#111;padding:12px 16px;border-radius:12px;font-weight:700}
+.empty{padding:50px 20px;text-align:center;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.mini{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 18px));background:#19191d;border:1px solid #303037;border-radius:15px;padding:8px 10px;z-index:15;display:none;align-items:center;gap:10px;box-shadow:0 10px 35px #0008}.mini.show{display:flex}.mini .track-cover{width:44px;height:44px}.mini .track-info{flex:1}.mini button{font-size:19px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(15px);z-index:50;display:none;align-items:flex-end}.overlay.show{display:flex}.player{width:100%;max-width:720px;margin:auto;background:var(--bg);min-height:92vh;border-radius:24px 24px 0 0;padding:20px 22px 34px}.player-top{display:flex;justify-content:space-between}.bigcover{width:min(78vw,430px);aspect-ratio:1;margin:35px auto;border-radius:22px;background:linear-gradient(135deg,#2b2b31,#111114);display:grid;place-items:center;color:#777;font-size:50px}.progress{height:4px;background:#303036;border-radius:4px;margin:18px 0 8px;position:relative}.progress i{display:block;width:34%;height:100%;background:var(--text);border-radius:4px}.times{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.controls{display:flex;justify-content:center;align-items:center;gap:24px;margin-top:28px}.play{width:64px;height:64px;background:var(--text);color:#111;border-radius:50%;font-size:24px}.modal{position:fixed;inset:0;background:#0008;z-index:60;display:none;align-items:flex-end}.modal.show{display:flex}.sheet{background:#18181c;width:100%;max-width:720px;margin:auto;border-radius:20px 20px 0 0;padding:18px}.sheet button{display:block;width:100%;text-align:left;padding:15px;border-bottom:1px solid var(--line)}.sheet button:last-child{border:0}
+@media(min-width:700px){.app{padding-top:35px}.nav{bottom:16px;border:1px solid var(--line);border-radius:18px;width:680px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="home" class="page active">
+    <header class="top"><div><div class="hello">Добрый вечер</div><h1>MUSE</h1></div><div class="avatar" id="avatar">M</div></header>
+    <label class="search"><span>⌕</span><input id="homeSearch" placeholder="Найти музыку" autocomplete="off"></label>
+    <section class="section"><div class="section-head"><h2>Быстрый доступ</h2></div><div class="quick">
+      <button onclick="showPage('favorites')"><b>♡ Понравившиеся</b><span class="muted" id="favCount">0 треков</span></button>
+      <button onclick="showPage('playlists')"><b>＋ Плейлисты</b><span class="muted" id="plCount">0 плейлистов</span></button>
+    </div></section>
+    <section class="section"><div class="section-head"><h2>Твои плейлисты</h2><button onclick="showPage('playlists')">Все</button></div><div id="homePlaylists" class="cards"></div></section>
+    <section class="section"><div class="section-head"><h2>Недавно слушал</h2></div><div id="recent"></div></section>
+  </div>
+
+  <div id="searchPage" class="page">
+    <div class="back" onclick="showPage('home')">‹ Назад</div><h1>Поиск</h1>
+    <label class="search"><span>⌕</span><input id="searchInput" placeholder="Трек или исполнитель" autocomplete="off"></label>
+    <div id="results"></div>
+  </div>
+
+  <div id="favorites" class="page">
+    <div class="back" onclick="showPage('home')">‹ Назад</div><div class="row"><div><h1>Понравившиеся</h1><div class="muted" id="favSubtitle"></div></div><button class="primary" onclick="playAll('favorites')">▶ Играть</button></div>
+    <div id="favoriteList" class="section"></div>
+  </div>
+
+  <div id="playlists" class="page">
+    <div class="back" onclick="showPage('home')">‹ Назад</div><div class="row"><h1>Моя музыка</h1><button class="primary" onclick="newPlaylist()">＋ Новый</button></div>
+    <section class="section"><div class="quick" id="playlistList"></div></section>
+  </div>
+
+  <div id="playlistPage" class="page">
+    <div class="back" onclick="showPage('playlists')">‹ Назад</div><div class="row"><div><h1 id="playlistTitle"></h1><div class="muted" id="playlistSubtitle"></div></div><button class="primary" onclick="playAll('playlist')">▶ Играть</button></div>
+    <div id="playlistTracks" class="section"></div>
+  </div>
+
+  <div id="profile" class="page">
+    <div class="back" onclick="showPage('home')">‹ Назад</div><div class="empty"><div class="avatar" style="margin:auto;width:64px;height:64px;font-size:22px" id="profileAvatar">M</div><h2 id="profileName">Telegram user</h2><div class="muted" id="profileUsername">@user</div><div class="quick" style="margin-top:25px"><div class="pill"><b id="profileFavs">0</b><br><span class="muted">понравилось</span></div><div class="pill"><b id="profilePlaylists">0</b><br><span class="muted">плейлистов</span></div></div></div>
+    <section class="section"><div class="row"><b>Тема</b><span class="muted">Системная</span></div></section>
+  </div>
+</div>
+
+<div class="mini" id="mini" onclick="openPlayer()"><div class="track-cover" id="miniCover">♪</div><div class="track-info"><div class="track-title" id="miniTitle"></div><div class="track-artist" id="miniArtist"></div></div><button onclick="event.stopPropagation();togglePlay()" id="miniPlay">▶</button></div>
+
+<nav class="nav"><button class="active" data-page="home" onclick="showPage('home')"><span class="ni">⌂</span>Главная</button><button data-page="searchPage" onclick="showPage('searchPage')"><span class="ni">⌕</span>Поиск</button><button data-page="playlists" onclick="showPage('playlists')"><span class="ni">♫</span>Моя музыка</button><button data-page="profile" onclick="showPage('profile')"><span class="ni">○</span>Профиль</button></nav>
+
+<div class="overlay" id="playerOverlay"><div class="player"><div class="player-top"><button onclick="closePlayer()">↓</button><button onclick="trackMenu(currentTrack)">•••</button></div><div class="bigcover" id="bigCover">♪</div><div class="row"><div><h2 id="bigTitle" style="margin:0"></h2><div class="muted" id="bigArtist"></div></div><button class="icon" id="bigLike" onclick="toggleLike(currentTrack)">♡</button></div><div class="progress" onclick="seek(event)"><i id="progressBar"></i></div><div class="times"><span id="currentTime">0:00</span><span id="duration">3:42</span></div><div class="controls"><button onclick="prevTrack()">↶</button><button class="play" id="bigPlay" onclick="togglePlay()">▶</button><button onclick="nextTrack()">↷</button></div></div></div>
+<div class="modal" id="trackModal"><div class="sheet" id="trackSheet"></div></div>
+
+<script>
+const demoTracks=[
+{id:1,title:"ASPHALT 8",artist:"MACAN",duration:222},{id:2,title:"KINO",artist:"MACAN",duration:194},{id:3,title:"RANDOM",artist:"FRIENDLY THUG 52 NGG",duration:205},{id:4,title:"Цепи",artist:"Скриптонит",duration:238},{id:5,title:"NIGHT DRIVE",artist:"MAYOT",duration:181},{id:6,title:"MOTION",artist:"OG BUDA",duration:210}
+];
+let state=JSON.parse(localStorage.getItem("muse_state")||'null')||{favorites:[],playlists:[{id:"night",name:"NIGHT DRIVE",tracks:[1,5]}],recent:[]};
+let currentTrack=null,isPlaying=false,playlistQueue=[],queueIndex=0,timer=null,elapsed=0,currentPlaylist=null;
+function save(){localStorage.setItem("muse_state",JSON.stringify(state));renderAll()}
+function track(id){return demoTracks.find(x=>x.id===id)}
+function renderAll(){document.getElementById("favCount").textContent=state.favorites.length+" треков";document.getElementById("plCount").textContent=state.playlists.length+" плейлистов";document.getElementById("profileFavs").textContent=state.favorites.length;document.getElementById("profilePlaylists").textContent=state.playlists.length;renderHomePlaylists();renderRecent();renderFavorites();renderPlaylists();if(currentPlaylist)renderPlaylist(currentPlaylist)}
+function renderHomePlaylists(){let e=document.getElementById("homePlaylists");e.innerHTML=state.playlists.map(p=>`<button class="playlist" onclick="openPlaylist('${p.id}')"><div class="cover">♫</div><b>${esc(p.name)}</b><div class="muted">${p.tracks.length} треков</div></button>`).join("")||`<div class="empty">Пока нет плейлистов</div>`}
+function renderRecent(){let e=document.getElementById("recent"),a=state.recent.slice(0,5).map(track);e.innerHTML=a.length?a.map(trackHTML).join(""):`<div class="empty">Начни слушать музыку — здесь появится история</div>`}
+function renderFavorites(){let e=document.getElementById("favoriteList"),a=state.favorites.map(track).filter(Boolean);document.getElementById("favSubtitle").textContent=a.length+" треков";e.innerHTML=a.length?a.map(trackHTML).join(""):`<div class="empty">Здесь появятся треки, которые ты отметишь ❤️</div>`}
+function renderPlaylists(){let e=document.getElementById("playlistList");e.innerHTML=state.playlists.map(p=>`<button onclick="openPlaylist('${p.id}')"><b>${esc(p.name)}</b><span class="muted">${p.tracks.length} треков</span></button>`).join("")}
+function renderPlaylist(id){let p=state.playlists.find(x=>x.id===id);if(!p)return;document.getElementById("playlistTitle").textContent=p.name;document.getElementById("playlistSubtitle").textContent=p.tracks.length+" треков";let a=p.tracks.map(track).filter(Boolean);document.getElementById("playlistTracks").innerHTML=a.length?a.map(trackHTML).join(""):`<div class="empty">Добавь сюда треки через меню •••</div>`}
+function trackHTML(t){let liked=state.favorites.includes(t.id);return `<div class="track" onclick="playTrack(${t.id})"><div class="track-cover">♪</div><div class="track-info"><div class="track-title">${esc(t.title)}</div><div class="track-artist">${esc(t.artist)}</div></div><button class="icon ${liked?'liked':''}" onclick="event.stopPropagation();toggleLike(${t.id})">${liked?'♥':'♡'}</button><button class="icon" onclick="event.stopPropagation();trackMenu(${t.id})">•••</button></div>`}
+function search(q){q=q.toLowerCase().trim();let r=demoTracks.filter(t=>(t.title+" "+t.artist).toLowerCase().includes(q));document.getElementById("results").innerHTML=q?(r.length?r.map(trackHTML).join(""):`<div class="empty">Ничего не найдено</div>`):`<div class="empty">Начни вводить название трека или исполнителя</div>`}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="favorites")renderFavorites();if(id==="playlists")renderPlaylists();window.scrollTo(0,0)}
+function openPlaylist(id){currentPlaylist=id;renderPlaylist(id);showPage("playlistPage")}
+function toggleLike(id){if(!id)return;let i=state.favorites.indexOf(id);if(i<0)state.favorites.push(id);else state.favorites.splice(i,1);save();if(currentTrack===id)document.getElementById("bigLike").textContent=state.favorites.includes(id)?"♥":"♡"}
+function playTrack(id){let t=track(id);if(!t)return;currentTrack=id;elapsed=0;isPlaying=true;if(!state.recent.includes(id))state.recent.unshift(id);state.recent=state.recent.slice(0,20);document.getElementById("mini").classList.add("show");updatePlayer();startTimer()}
+function updatePlayer(){let t=track(currentTrack);if(!t)return;document.getElementById("miniTitle").textContent=t.title;document.getElementById("miniArtist").textContent=t.artist;document.getElementById("bigTitle").textContent=t.title;document.getElementById("bigArtist").textContent=t.artist;document.getElementById("bigLike").textContent=state.favorites.includes(t.id)?"♥":"♡";document.getElementById("duration").textContent=fmt(t.duration);document.getElementById("miniPlay").textContent=isPlaying?"❚❚":"▶";document.getElementById("bigPlay").textContent=isPlaying?"❚❚":"▶"}
+function openPlayer(){if(currentTrack){document.getElementById("playerOverlay").classList.add("show");updatePlayer()}}
+function closePlayer(){document.getElementById("playerOverlay").classList.remove("show")}
+function togglePlay(){if(!currentTrack)return;isPlaying=!isPlaying;updatePlayer();isPlaying?startTimer():stopTimer()}
+function startTimer(){stopTimer();timer=setInterval(()=>{if(!isPlaying||!currentTrack)return;elapsed++;let t=track(currentTrack);if(elapsed>=t.duration){nextTrack();return}document.getElementById("progressBar").style.width=(elapsed/t.duration*100)+"%";document.getElementById("currentTime").textContent=fmt(elapsed)},1000)}
+function stopTimer(){if(timer)clearInterval(timer)}
+function nextTrack(){if(!playlistQueue.length){playlistQueue=demoTracks.map(x=>x.id)}queueIndex=(queueIndex+1)%playlistQueue.length;playTrack(playlistQueue[queueIndex])}
+function prevTrack(){if(elapsed>5){elapsed=0;return}if(!playlistQueue.length)playlistQueue=demoTracks.map(x=>x.id);queueIndex=(queueIndex-1+playlistQueue.length)%playlistQueue.length;playTrack(playlistQueue[queueIndex])}
+function playAll(type){let ids=type==="favorites"?state.favorites:(type==="playlist"?state.playlists.find(p=>p.id===currentPlaylist)?.tracks:demoTracks.map(t=>t.id));if(!ids?.length)return;playlistQueue=[...ids];queueIndex=0;playTrack(playlistQueue[0]);openPlayer()}
+function trackMenu(id){let t=track(id);if(!t)return;let opts=`<b>${esc(t.title)}</b><div class="muted" style="margin:4px 0 10px">${esc(t.artist)}</div><button onclick="playTrack(${id});closeMenu()">▶ Играть</button><button onclick="toggleLike(${id});closeMenu()">♡ Добавить / убрать из понравившихся</button>`+state.playlists.map(p=>`<button onclick="addToPlaylist('${p.id}',${id});closeMenu()">＋ ${esc(p.name)}</button>`).join("")+`<button onclick="closeMenu()">Отмена</button>`;document.getElementById("trackSheet").innerHTML=opts;document.getElementById("trackModal").classList.add("show")}
+function closeMenu(){document.getElementById("trackModal").classList.remove("show")}
+function addToPlaylist(pid,tid){let p=state.playlists.find(x=>x.id===pid);if(p&&!p.tracks.includes(tid))p.tracks.push(tid);save()}
+function newPlaylist(){let name=prompt("Название нового плейлиста:");if(!name?.trim())return;state.playlists.push({id:"p"+Date.now(),name:name.trim(),tracks:[]});save()}
+function seek(e){let t=track(currentTrack);if(!t)return;let r=e.currentTarget.getBoundingClientRect();elapsed=Math.floor(((e.clientX-r.left)/r.width)*t.duration);document.getElementById("progressBar").style.width=(elapsed/t.duration*100)+"%";document.getElementById("currentTime").textContent=fmt(elapsed)}
+function fmt(s){s=Math.max(0,Math.floor(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+document.getElementById("homeSearch").addEventListener("focus",()=>showPage("searchPage"));
+document.getElementById("homeSearch").addEventListener("input",e=>{showPage("searchPage");document.getElementById("searchInput").value=e.target.value;search(e.target.value)});
+document.getElementById("searchInput").addEventListener("input",e=>search(e.target.value));
+document.getElementById("trackModal").addEventListener("click",e=>{if(e.target.id==="trackModal")closeMenu()});
+try{if(window.Telegram?.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();let u=Telegram.WebApp.initDataUnsafe?.user;if(u){let name=u.first_name||"Telegram user";document.getElementById("profileName").textContent=name;document.getElementById("avatar").textContent=name[0];document.getElementById("profileAvatar").textContent=name[0];document.getElementById("profileUsername").textContent=u.username?"@"+u.username:"Telegram user"}}}catch(e){}
+renderAll();
+</script>
+</body>
+</html>
